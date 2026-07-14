@@ -46,6 +46,36 @@ function headerDescriptions(header: string): Map<string, string> {
   return map;
 }
 
+/**
+ * Option names + example defaults from the header `.new{ ... }` block.
+ * Handles multiple `name = value` pairs on one line and bare `name,` entries.
+ * Returns insertion order plus a name→default-literal map (defaults only for
+ * `name = value` forms; bare names have no example default).
+ */
+function headerExample(header: string): { order: string[]; defaults: Map<string, string> } {
+  const order: string[] = [];
+  const defaults = new Map<string, string>();
+  const block = header.match(/\.new{([\s\S]*?)}/);
+  if (!block) return { order, defaults };
+  for (let line of block[1].split('\n')) {
+    line = line.replace(/--.*$/, '').trim(); // strip trailing comment
+    if (!line) continue;
+    for (const part of line.split(',')) {
+      const seg = part.trim();
+      if (!seg) continue;
+      const kv = seg.match(/^(\w+)\s*=\s*(.+)$/);
+      if (kv) {
+        if (!order.includes(kv[1])) order.push(kv[1]);
+        // Skip placeholder defaults like `<theme table>`.
+        if (!/^<.*>$/.test(kv[2].trim())) defaults.set(kv[1], kv[2].trim());
+      } else if (/^\w+$/.test(seg)) {
+        if (!order.includes(seg)) order.push(seg);
+      }
+    }
+  }
+  return { order, defaults };
+}
+
 function inferType(def: string | null, name: string): WidgetOption['type'] {
   if (def === 'false' || def === 'true') return 'boolean';
   if (def && /^-?\d+(\.\d+)?$/.test(def)) return 'number';
@@ -63,29 +93,43 @@ export function parseWidget(id: string, displayName: string, src: string): Widge
   if (!header) throw new Error(`parseWidget: no header comment in widget "${displayName}" (${id})`);
 
   const descs = headerDescriptions(header);
+  const example = headerExample(header);
   const body = newMatch[2];
   const optsVar = newMatch[1];
-  const assignRe = new RegExp(
-    `self\\.(\\w+)\\s*=\\s*${optsVar}\\.(\\w+)\\b(?:\\s+or\\s+([^\\n]+?))?\\s*$`,
+
+  // Clean assignments give authoritative runtime defaults: `self.x = opts.x or D`.
+  const cleanDefault = new Map<string, string | null>();
+  const cleanRe = new RegExp(
+    `self\\.\\w+\\s*=\\s*${optsVar}\\.(\\w+)\\b(?:\\s+or\\s+([^\\n]+?))?\\s*$`,
     'gm'
   );
-  const seen = new Set<string>();
-  const options: WidgetOption[] = [];
-  for (const m of body.matchAll(assignRe)) {
-    const name = m[2];
-    if (seen.has(name)) continue;
-    seen.add(name);
-    let def: string | null = m[3]?.trim() ?? null;
+  for (const m of body.matchAll(cleanRe)) {
+    if (!cleanDefault.has(m[1])) cleanDefault.set(m[1], m[2]?.trim() ?? null);
+  }
+
+  // Every option the constructor reads: `opts.NAME` anywhere in the body.
+  const bodyReads = new Set<string>();
+  for (const m of body.matchAll(new RegExp(`${optsVar}\\.(\\w+)`, 'g'))) bodyReads.add(m[1]);
+
+  // Union: header example order first (public API order), then any extra body reads.
+  const names: string[] = [];
+  for (const n of example.order) if (!names.includes(n)) names.push(n);
+  for (const n of bodyReads) if (!names.includes(n)) names.push(n);
+
+  const options: WidgetOption[] = names.map((name) => {
+    let def: string | null;
+    if (cleanDefault.has(name)) def = cleanDefault.get(name) ?? null;
+    else def = example.defaults.get(name) ?? null;
     if (def && /^default[Tt]heme$/.test(def)) def = '<default theme>';
     const type = inferType(def, name);
-    options.push({
+    return {
       name,
       default: def,
       type,
       description: descs.get(name),
       isCallback: type === 'function'
-    });
-  }
+    };
+  });
 
   // Summary = prose paragraphs of the header that are NOT the `.new{ ... }` block.
   const summary = header

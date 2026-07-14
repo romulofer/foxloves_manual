@@ -62,6 +62,33 @@ test('parseWidget detects capabilities', () => {
   expect(w.capabilities.keys).toEqual(['space', 'return', 'kpenter']);
 });
 
+const SLIDER = `-- Slider widget.
+--
+-- Slider.new{
+--   x, y, w,
+--   value = 0, min = 0, max = 1,
+--   onChange = function(value) end,
+-- }
+--
+-- Drag a handle to pick a value.
+
+function Slider.new(opts)
+  local self = setmetatable({}, Slider)
+  self.min = opts.min or 0
+  self.value = util.clamp(opts.value or self.min, self.min, self.max)
+  self.onChange = opts.onChange
+  return self
+end
+return Slider`;
+
+test('parseWidget captures options whose default is wrapped in a call', () => {
+  const w = parseWidget('slider', 'Slider', SLIDER);
+  const value = w.options.find((o) => o.name === 'value')!;
+  expect(value).toBeDefined();
+  // No clean `self.value = opts.value or X`, so default comes from the header example.
+  expect(value.default).toBe('0');
+});
+
 test('parseWidget throws on malformed source', () => {
   expect(() => parseWidget('bad', 'Bad', '-- no new function here\nreturn {}')).toThrow(/Bad/);
 });
