@@ -1,6 +1,6 @@
 import widgetsJson from './data/widgets.json';
 import tokensJson from './data/tokens.json';
-import manifestJson from '../../static/shots/manifest.json';
+import manifestJson from './data/manifest.json';
 import type { WidgetDoc, Tokens, Shot } from './types';
 
 export const widgets = widgetsJson as WidgetDoc[];

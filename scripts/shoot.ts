@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { cpSync, existsSync, rmSync, mkdirSync } from 'node:fs';
+import { cpSync, existsSync, rmSync, mkdirSync, copyFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
@@ -16,4 +16,10 @@ if (!existsSync(src)) throw new Error(`no shots produced at ${src}`);
 rmSync(DEST, { recursive: true, force: true });
 mkdirSync(DEST, { recursive: true });
 cpSync(src, DEST, { recursive: true });
-console.log(`copied shots -> ${DEST}`);
+
+// The manifest is data (imported by the site), not a served asset — keep it in
+// src/lib/data alongside widgets.json. PNGs stay under static/shots.
+const dataDir = join(REPO_ROOT, 'src/lib/data');
+mkdirSync(dataDir, { recursive: true });
+copyFileSync(join(DEST, 'manifest.json'), join(dataDir, 'manifest.json'));
+console.log(`copied shots -> ${DEST}; manifest -> ${dataDir}`);
