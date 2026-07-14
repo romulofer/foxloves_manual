@@ -4,6 +4,7 @@
   import OptionsTable from '$lib/components/OptionsTable.svelte';
   import WidgetGallery from '$lib/components/WidgetGallery.svelte';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
+  import { t } from '$lib/i18n';
   import type { WidgetDoc } from '$lib/types';
   export let data: { widget: WidgetDoc; shots: import('$lib/types').Shot[] };
   $: w = data.widget;
@@ -28,19 +29,19 @@
 </header>
 <p class="summary">{w.summary}</p>
 
-<h2>Appearance</h2>
+<h2>{$t('widget.appearance')}</h2>
 <WidgetGallery shots={data.shots} />
 
-<h2>Capabilities</h2>
+<h2>{$t('widget.capabilities')}</h2>
 <CapabilityChips capabilities={w.capabilities} />
 
-<h2>Options</h2>
+<h2>{$t('widget.options')}</h2>
 <OptionsTable options={w.options} />
 
-<h2>Example</h2>
+<h2>{$t('widget.example')}</h2>
 <CodeBlock code={example(w)} />
 
-<h2>Source</h2>
+<h2>{$t('widget.source')}</h2>
 <CodeBlock code={w.sourceExcerpt} />
 
 <style>

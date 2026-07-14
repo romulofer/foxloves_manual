@@ -2,12 +2,13 @@
   import { widgets, shotsFor } from '$lib/data';
   import { base } from '$app/paths';
   import CategoryBadge from '$lib/components/CategoryBadge.svelte';
+  import { t } from '$lib/i18n';
   let q = '';
   $: filtered = widgets.filter((w) => w.displayName.toLowerCase().includes(q.toLowerCase()));
 </script>
 
-<h1>Widgets</h1>
-<input placeholder="Filter widgets…" bind:value={q} />
+<h1>{$t('widgets.title')}</h1>
+<input placeholder={$t('widgets.filter')} bind:value={q} />
 <div class="grid">
   {#each filtered as w}
     {@const shot = shotsFor(w.id)[0]}

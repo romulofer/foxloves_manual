@@ -1,11 +1,12 @@
 <script lang="ts">
   import type { WidgetOption } from '$lib/types';
+  import { t } from '$lib/i18n';
   export let options: WidgetOption[];
 </script>
 
 <table>
   <thead>
-    <tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><th>{$t('table.option')}</th><th>{$t('table.type')}</th><th>{$t('table.default')}</th><th>{$t('table.description')}</th></tr>
   </thead>
   <tbody>
     {#each options as o}

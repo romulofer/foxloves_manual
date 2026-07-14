@@ -2,19 +2,22 @@
   import '$lib/theme.css';
   import { widgetsByCategory } from '$lib/data';
   import { base } from '$app/paths';
+  import { t } from '$lib/i18n';
+  import LanguageToggle from '$lib/components/LanguageToggle.svelte';
   const cats = widgetsByCategory();
 </script>
 
 <div class="shell">
   <nav>
     <a class="brand" href="{base}/">foxloves</a>
-    <a href="{base}/foundations/theme">Theme</a>
-    <a href="{base}/foundations/lifecycle">Lifecycle</a>
-    <a href="{base}/foundations/building">Building foxloves</a>
-    <a href="{base}/widgets">All widgets</a>
-    <h4>Controls</h4>
+    <LanguageToggle />
+    <a href="{base}/foundations/theme">{$t('nav.theme')}</a>
+    <a href="{base}/foundations/lifecycle">{$t('nav.lifecycle')}</a>
+    <a href="{base}/foundations/building">{$t('nav.building')}</a>
+    <a href="{base}/widgets">{$t('nav.allWidgets')}</a>
+    <h4>{$t('nav.controls')}</h4>
     {#each cats.control as w}<a href="{base}/widgets/{w.id}">{w.displayName}</a>{/each}
-    <h4>Containers / Overlays</h4>
+    <h4>{$t('nav.containers')}</h4>
     {#each cats['container-overlay'] as w}<a href="{base}/widgets/{w.id}">{w.displayName}</a>{/each}
   </nav>
   <main><slot /></main>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import CodeBlock from '$lib/components/CodeBlock.svelte';
+  import { locale, t } from '$lib/i18n';
 
   const layout = `foxloves/
 ├── conf.lua              -- LÖVE window config (love.conf)
@@ -450,6 +451,8 @@ os.exit(h.fail == 0 and 0 or 1)`;
   contract, a <code>Root</code> that drives them, and a headless test suite.
 </p>
 
+{#if $locale === 'pt'}<p class="en-only">{$t('build.enOnly')}</p>{/if}
+
 <!-- 1 -->
 <h2>1. Design principles</h2>
 <p>Four constraints shape every decision. Keep them in mind as you read the rest.</p>
@@ -751,6 +754,14 @@ os.exit(h.fail == 0 and 0 or 1)`;
     font-size: 17px;
     color: var(--fox-text-muted);
     max-width: 700px;
+  }
+  .en-only {
+    padding: 8px 12px;
+    border: 1px solid var(--fox-border);
+    border-left: 3px solid var(--fox-accent);
+    border-radius: 4px;
+    background: var(--fox-fg);
+    font-size: 14px;
   }
   h2 {
     margin-top: 40px;

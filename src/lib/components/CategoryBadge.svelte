@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { t } from '$lib/i18n';
   export let category: 'control' | 'container-overlay';
 </script>
 
-<span class="badge">{category === 'control' ? 'Control' : 'Container / Overlay'}</span>
+<span class="badge">{category === 'control' ? $t('cat.control') : $t('cat.container')}</span>
 
 <style>
   .badge {
