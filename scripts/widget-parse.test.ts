@@ -89,6 +89,24 @@ test('parseWidget captures options whose default is wrapped in a call', () => {
   expect(value.default).toBe('0');
 });
 
+test('parseWidget fills common options from the glossary when the header omits them', () => {
+  const w = parseWidget('button', 'Button', BUTTON);
+  const x = w.options.find((o) => o.name === 'x')!;
+  expect(x.description).toBe('X position, in pixels.');
+  expect(x.type).toBe('number');
+  // Header-provided descriptions still win over the glossary.
+  const label = w.options.find((o) => o.name === 'label')!;
+  expect(label.description).toBe('text drawn centered');
+});
+
+test('parseWidget gives no-default common options a glossary type', () => {
+  const w = parseWidget('slider', 'Slider', SLIDER);
+  // `step` is read as opts.step with no `or` default → would be 'any' without the glossary.
+  const value = w.options.find((o) => o.name === 'value')!;
+  expect(value.type).toBe('number');
+  expect(value.description).toBe('Current value.');
+});
+
 test('parseWidget throws on malformed source', () => {
   expect(() => parseWidget('bad', 'Bad', '-- no new function here\nreturn {}')).toThrow(/Bad/);
 });

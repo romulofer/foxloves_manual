@@ -76,6 +76,40 @@ function headerExample(header: string): { order: string[]; defaults: Map<string,
   return { order, defaults };
 }
 
+// Fallback descriptions + type hints for universal options that widget headers
+// rarely re-document per line. A widget's own inline comment always wins over
+// these; the type hint only applies when inference yields 'any'.
+const COMMON: Record<string, { description: string; type?: WidgetOption['type'] }> = {
+  x: { description: 'X position, in pixels.', type: 'number' },
+  y: { description: 'Y position, in pixels.', type: 'number' },
+  w: { description: 'Width, in pixels.', type: 'number' },
+  h: { description: 'Height, in pixels.', type: 'number' },
+  value: { description: 'Current value.', type: 'number' },
+  min: { description: 'Minimum value.', type: 'number' },
+  max: { description: 'Maximum value.', type: 'number' },
+  step: { description: 'Snap increment applied to the value.', type: 'number' },
+  size: { description: 'Size, in pixels.', type: 'number' },
+  spacing: { description: 'Gap between items, in pixels.', type: 'number' },
+  disabled: { description: 'Greys the widget out and ignores input.', type: 'boolean' },
+  theme: { description: 'Theme table override; falls back to the default.', type: 'table' },
+  label: { description: 'Text label.', type: 'string' },
+  text: { description: 'Displayed text.', type: 'string' },
+  title: { description: 'Title text.', type: 'string' },
+  placeholder: { description: 'Hint shown while empty.', type: 'string' },
+  maxLength: { description: 'Maximum number of characters.', type: 'number' },
+  selected: { description: 'Index of the selected item.', type: 'number' },
+  items: { description: 'List of items to display.', type: 'table' },
+  options: { description: 'List of options to display.', type: 'table' },
+  checked: { description: 'Whether the box is checked.', type: 'boolean' },
+  indeterminate: { description: 'Renders the mixed/indeterminate state.', type: 'boolean' },
+  on: { description: 'On/off state.', type: 'boolean' },
+  vertical: { description: 'Lay the widget out vertically.', type: 'boolean' },
+  onChange: { description: 'Called when the value changes.', type: 'function' },
+  onClick: { description: 'Called when activated.', type: 'function' },
+  onSubmit: { description: 'Called on Enter.', type: 'function' },
+  onRemove: { description: 'Called when removed.', type: 'function' }
+};
+
 function inferType(def: string | null, name: string): WidgetOption['type'] {
   if (def === 'false' || def === 'true') return 'boolean';
   if (def && /^-?\d+(\.\d+)?$/.test(def)) return 'number';
@@ -121,12 +155,16 @@ export function parseWidget(id: string, displayName: string, src: string): Widge
     if (cleanDefault.has(name)) def = cleanDefault.get(name) ?? null;
     else def = example.defaults.get(name) ?? null;
     if (def && /^default[Tt]heme$/.test(def)) def = '<default theme>';
-    const type = inferType(def, name);
+    const common = COMMON[name];
+    let type = inferType(def, name);
+    if (type === 'any' && common?.type) type = common.type;
+    // Header comment wins; otherwise fall back to the common glossary.
+    const description = descs.get(name) ?? common?.description;
     return {
       name,
       default: def,
       type,
-      description: descs.get(name),
+      description,
       isCallback: type === 'function'
     };
   });
