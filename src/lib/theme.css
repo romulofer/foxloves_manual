@@ -1,0 +1,37 @@
+:root {
+  --fox-bg: #292b33;
+  --fox-fg: #383d47;
+  --fox-accent: #e68c40;
+  --fox-border: #595e6b;
+  --fox-hover: #474d59;
+  --fox-focus: #fab866;
+  --fox-text: #f0f2f7;
+  --fox-text-muted: #8c919e;
+  --fox-radius: 4px;
+  --fox-pad: 8px;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--fox-bg);
+  color: var(--fox-text);
+  font: 15px/1.55 system-ui, sans-serif;
+}
+a {
+  color: var(--fox-accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+code,
+pre {
+  font-family: ui-monospace, monospace;
+}
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+}
