@@ -4,10 +4,12 @@
   import OptionsTable from '$lib/components/OptionsTable.svelte';
   import WidgetGallery from '$lib/components/WidgetGallery.svelte';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
-  import { t } from '$lib/i18n';
+  import { t, locale } from '$lib/i18n';
+  import { localizeWidget } from '$lib/i18n-widgets';
   import type { WidgetDoc } from '$lib/types';
   export let data: { widget: WidgetDoc; shots: import('$lib/types').Shot[] };
   $: w = data.widget;
+  $: view = localizeWidget(w, $locale);
 
   // A minimal constructor snippet: bounds plus any notable text/value option.
   function example(widget: WidgetDoc): string {
@@ -27,7 +29,7 @@
   <h1>{w.displayName}</h1>
   <CategoryBadge category={w.category} />
 </header>
-<p class="summary">{w.summary}</p>
+<p class="summary">{view.summary}</p>
 
 <h2>{$t('widget.appearance')}</h2>
 <WidgetGallery shots={data.shots} />
@@ -36,7 +38,7 @@
 <CapabilityChips capabilities={w.capabilities} />
 
 <h2>{$t('widget.options')}</h2>
-<OptionsTable options={w.options} />
+<OptionsTable options={view.options} />
 
 <h2>{$t('widget.example')}</h2>
 <CodeBlock code={example(w)} />

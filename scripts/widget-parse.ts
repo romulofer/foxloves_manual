@@ -169,11 +169,25 @@ export function parseWidget(id: string, displayName: string, src: string): Widge
     };
   });
 
-  // Summary = prose paragraphs of the header that are NOT the `.new{ ... }` block.
-  const summary = header
-    .replace(/[\w.]+\.new{[\s\S]*?}\n?/g, '')
-    .split('\n')
-    .filter((l) => l.trim() && !/^\s*\w+\s*[,=]/.test(l))
+  // Summary = header prose with the `.new{ ... }` example block removed. The
+  // block can contain nested braces, so remove it by lines: from the `.new{`
+  // line through the first line that is just the closing `}`.
+  const hlines = header.split('\n');
+  const bStart = hlines.findIndex((l) => /[\w.]+\.new\s*{/.test(l));
+  let bEnd = -1;
+  if (bStart >= 0) {
+    for (let i = bStart + 1; i < hlines.length; i++) {
+      if (hlines[i].trim() === '}') {
+        bEnd = i;
+        break;
+      }
+    }
+    if (bEnd === -1) bEnd = bStart;
+  }
+  const summary = hlines
+    .filter((l, i) => !(bStart >= 0 && i >= bStart && i <= bEnd))
+    .map((l) => l.trim())
+    .filter((l) => l && l !== '}' && l !== ',' && l !== '},')
     .join(' ')
     .replace(/\s+/g, ' ')
     .trim();

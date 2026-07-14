@@ -2,7 +2,8 @@
   import { widgets, shotsFor } from '$lib/data';
   import { base } from '$app/paths';
   import CategoryBadge from '$lib/components/CategoryBadge.svelte';
-  import { t } from '$lib/i18n';
+  import { t, locale } from '$lib/i18n';
+  import { localizeWidget } from '$lib/i18n-widgets';
   let q = '';
   $: filtered = widgets.filter((w) => w.displayName.toLowerCase().includes(q.toLowerCase()));
 </script>
@@ -15,7 +16,7 @@
     <a class="card" href="{base}/widgets/{w.id}">
       {#if shot}<img src="{base}/{shot.file}" alt={w.displayName} />{/if}
       <div class="row"><strong>{w.displayName}</strong><CategoryBadge category={w.category} /></div>
-      <p>{w.summary}</p>
+      <p>{localizeWidget(w, $locale).summary}</p>
     </a>
   {/each}
 </div>
