@@ -1,6 +1,6 @@
 <script lang="ts">
   import CodeBlock from '$lib/components/CodeBlock.svelte';
-  import { locale, t } from '$lib/i18n';
+  import { locale } from '$lib/i18n';
 
   const layout = `foxloves/
 ├── conf.lua              -- LÖVE window config (love.conf)
@@ -443,6 +443,263 @@ os.exit(h.fail == 0 and 0 or 1)`;
 
 <svelte:head><title>Building foxloves — foxloves</title></svelte:head>
 
+{#if $locale === 'pt'}
+<h1>Construindo o foxloves do zero</h1>
+<p class="lead">
+  Um passo a passo completo de como a biblioteca é construída, camada por camada,
+  na ordem em que você a montaria. O foxloves é Lua puro para LÖVE 11.x, sem
+  dependências: um tema compartilhado, um conjunto de widgets que seguem um único
+  contrato de ciclo de vida, um <code>Root</code> que os controla e uma suíte de
+  testes headless.
+</p>
+
+<h2>1. Princípios de design</h2>
+<p>Quatro restrições moldam cada decisão. Tenha-as em mente ao ler o restante.</p>
+<ul>
+  <li><strong>Sem dependências.</strong> Apenas Lua puro e a API do LÖVE. Entra em qualquer projeto love2d copiando uma pasta.</li>
+  <li><strong>Um ciclo de vida.</strong> Cada widget implementa os mesmos poucos métodos, então o host controla uma lista heterogênea de widgets em um único laço.</li>
+  <li><strong>Orientado a tema.</strong> Nenhum widget fixa cor ou métrica no código; toda a aparência vem de uma tabela de tema, então um jogo re-estiliza a interface inteira trocando uma tabela.</li>
+  <li><strong>Testável headless.</strong> Um mock da API do LÖVE permite rodar toda a suíte em CI sem janela.</li>
+</ul>
+
+<h2>2. Estrutura do projeto</h2>
+<h3>2.1 Organização de pastas</h3>
+<p>A biblioteca fica em uma pasta interna <code>foxloves/</code> (a raiz do require); a pasta externa contém a demo e os testes.</p>
+<CodeBlock code={layout} lang="text" />
+<h3>2.2 Configuração da janela</h3>
+<p><code>conf.lua</code> é o hook de pré-inicialização do LÖVE — defina a janela aqui.</p>
+<CodeBlock code={conf} />
+<h3>2.3 Resolução de módulos</h3>
+<p>
+  <code>require("foxloves")</code> carrega <code>foxloves/init.lua</code>, que retorna uma
+  tabela com todos os widgets além de <code>theme</code> e <code>util</code>. Submódulos
+  resolvem por caminho pontuado a partir da raiz do projeto.
+</p>
+<CodeBlock code={requirePath} />
+
+<h2>3. O tema</h2>
+<h3>3.1 Cores e métricas</h3>
+<p>
+  Centralize a aparência primeiro — tudo depois lê dela. Cores são tabelas
+  <code>{'{r, g, b, a}'}</code> no intervalo 0–1; métricas são números simples.
+</p>
+<CodeBlock code={theme} />
+<h3>3.2 Resolução de fonte e overrides</h3>
+<p>
+  <code>getFont</code> resolve a fonte ativa por ordem de prioridade: o tema do próprio
+  widget, depois o padrão do módulo, depois a fonte atual do LÖVE. Cada widget aceita um
+  <code>theme</code> opcional em suas opções e recorre a esse padrão, então um widget pode
+  ser re-estilizado sem afetar os demais.
+</p>
+<h3>3.3 Cores semânticas de status</h3>
+<p>
+  <code>info</code>, <code>success</code>, <code>warning</code> e <code>error</code> dão aos
+  widgets de status (Toast, Badge) um vocabulário compartilhado em vez de tons ad-hoc. Veja a
+  <a href="/foundations/theme">referência de tema</a> para as amostras ao vivo.
+</p>
+
+<h2>4. Helpers compartilhados</h2>
+<p>Antes do primeiro widget, um pequeno módulo <code>util</code> para o que todo widget repete.</p>
+<h3>4.1 Geometria</h3>
+<p><code>contains</code> alimenta o teste de acerto de cada widget; <code>clamp</code> limita valores de slider/stepper.</p>
+<h3>4.2 Anel de foco e verificação de foco</h3>
+<p>
+  <code>focusRing</code> desenha o contorno de foco do teclado; <code>isFocused</code> pergunta
+  ao <code>Root</code> do widget se ele está com o foco no momento. Ambos mantêm o modelo de
+  foco consistente entre os widgets.
+</p>
+<CodeBlock code={util} />
+
+<h2>5. O contrato do widget</h2>
+<h3>5.1 Os seis métodos do ciclo de vida</h3>
+<p>Cada widget é um módulo que retorna uma fábrica <code>Widget.new(opts)</code> e implementa:</p>
+<ul>
+  <li><code>update(dt)</code> — lógica por quadro (hover, piscar do cursor).</li>
+  <li><code>draw()</code> — desenha com <code>love.graphics</code>, restaurando o estado de cor anterior.</li>
+  <li><code>mousepressed / mousereleased(x, y, btn)</code> — retornam <code>true</code> quando consumidos.</li>
+  <li><code>keypressed(key)</code>, <code>textinput(text)</code> — entrada de teclado.</li>
+</ul>
+<h3>5.2 As cinco regras</h3>
+<ol>
+  <li>Nunca chame <code>setColor</code> sem restaurar o estado anterior; leia todas as cores/métricas do tema.</li>
+  <li>Widgets guardam o próprio estado — sem globais.</li>
+  <li>Manipuladores de entrada retornam <code>true</code> quando consomem o evento, para o chamador interromper a propagação.</li>
+  <li>Callbacks (<code>onClick</code>, <code>onChange</code>) vêm de <code>opts</code> e são opcionais.</li>
+  <li>Documente a API pública em um bloco de comentário acima de <code>new</code>.</li>
+</ol>
+<h3>5.3 Ganchos adicionais opcionais</h3>
+<p>Presentes apenas onde fazem sentido — os seis métodos centrais são estáveis e nunca crescem:</p>
+<ul>
+  <li><code>focusable = true</code> — participa da navegação por Tab; desenhe um anel e condicione a ativação por teclado a <code>isFocused</code>.</li>
+  <li><code>setFocused(bool)</code> — deixa o <code>Root</code> sincronizar a flag de foco do próprio widget (o Textbox usa).</li>
+  <li><code>wheelmoved(dx, dy)</code> — widgets roláveis; a roda não tem coordenadas, então o widget verifica o mouse contra os próprios limites.</li>
+  <li><code>mousemoved(x, y, dx, dy)</code> — hover orientado a eventos em coordenadas locais.</li>
+</ul>
+<h3>5.4 O modelo de coordenadas</h3>
+<p>
+  Os manipuladores recebem coordenadas já no espaço do próprio widget. Um
+  <code>Container</code> subtrai a origem do conteúdo antes de repassar, então um widget
+  aninhado em um Panel testa acerto contra as mesmas coordenadas em que foi posicionado.
+  Prefira <code>mousemoved</code> a consultar <code>love.mouse.getPosition()</code>, que
+  retorna coordenadas de tela e falha dentro de um container transladado.
+</p>
+
+<h2>6. Primeiro widget: Button</h2>
+<h3>6.1 Construtor e opções</h3>
+<p>Leia opções com padrões, guarde o tema, exponha campos de estado, participe do foco.</p>
+<CodeBlock code={btnCtor} />
+<h3>6.2 Draw: preenchimentos por estado e restauração de cor</h3>
+<p>Os quatro passos numerados são o contrato em miniatura: salvar a cor, escolher um preenchimento do tema conforme o estado, desenhar (mais o anel de foco), restaurar.</p>
+<CodeBlock code={btnDraw} />
+<h3>6.3 Semântica de consumo</h3>
+<p>
+  O press marca <code>pressed</code> e retorna <code>true</code>; o release dispara
+  <code>onClick</code> apenas quando cai dentro <em>e</em> o press começou dentro — o
+  comportamento padrão de botão que permite ao usuário deslizar para fora e cancelar.
+</p>
+<CodeBlock code={btnInput} />
+<h3>6.4 Ativação por teclado</h3>
+<p>Condicionada ao foco: quando o Button está com o foco em um Root, Espaço/Enter disparam o mesmo <code>onClick</code>. (Mostrado no trecho acima.)</p>
+
+<h2>7. Registre e execute</h2>
+<h3>7.1 A tabela de exportação</h3>
+<p><code>init.lua</code> é a superfície pública; adicione cada novo widget aqui.</p>
+<CodeBlock code={init} />
+<h3>7.2 O laço de controle</h3>
+<p>Crie widgets em <code>love.load</code> e repasse cada callback do LÖVE ao Root, deixando a interface consumir a entrada primeiro.</p>
+<CodeBlock code={driver} />
+
+<h2>8. Entrada com estado: Textbox</h2>
+<h3>8.1 Foco que o Root pode sincronizar</h3>
+<p>
+  Diferente do Button, um Textbox mantém a própria flag <code>focused</code> e expõe
+  <code>setFocused</code> para o <code>Root</code> manter o foco gerenciado e a flag da caixa
+  em sincronia quando o Tab move o foco para dentro ou fora.
+</p>
+<CodeBlock code={tbFocus} />
+<h3>8.2 Digitação e edição</h3>
+<p>
+  <code>textinput</code> insere caracteres na posição do cursor (respeitando
+  <code>maxLength</code>); <code>keypressed</code> trata teclas de edição. O widget real também
+  faz movimento de cursor, saltos por palavra, uma seleção de intervalo e recortar/copiar/colar
+  via área de transferência do sistema — tudo sobre o mesmo <code>value</code> indexado por bytes.
+</p>
+<CodeBlock code={tbType} />
+<h3>8.3 Callbacks de mudança e envio</h3>
+<p>
+  <code>onChange(newValue)</code> dispara a cada edição; Enter dispara <code>onSubmit(value)</code>
+  e tira o foco pelo Root, limpando também o foco de teclado.
+</p>
+
+<h2>9. Widgets de valor: o padrão Toggle</h2>
+<h3>9.1 Valor mais onChange</h3>
+<p>
+  Checkbox, Toggle, Slider e Stepper compartilham a forma: guardar um valor, alterá-lo na
+  interação e disparar <code>onChange(value)</code> apenas quando ele realmente muda.
+</p>
+<h3>9.2 Animação no update</h3>
+<p>
+  Mudanças de estado são instantâneas, mas os visuais suavizam. O Toggle guarda um valor
+  <code>anim</code> em <code>[0, 1]</code> e o avança em direção ao alvo a cada quadro no
+  <code>update</code> — o mesmo padrão que Modal e Slider usam para o movimento de
+  entrada/manípulo.
+</p>
+<CodeBlock code={toggle} />
+
+<h2>10. fox.Root: o gerenciador</h2>
+<p>
+  Widgets isolados funcionam, mas uma interface real precisa de ordem de profundidade, um
+  único foco de teclado e sobreposições. O <code>Root</code> possui uma camada base mais uma
+  pilha de sobreposições e roteia os eventos do LÖVE para elas.
+</p>
+<h3>10.1 A camada base</h3>
+<p><code>add</code> registra um widget e define seu backref <code>.root</code>, para o widget depois abrir sobreposições ou limpar o foco.</p>
+<CodeBlock code={rootBase} />
+<h3>10.2 Foco de teclado e navegação por Tab</h3>
+<p>
+  <code>setFocus</code> move o foco e sincroniza qualquer widget com <code>setFocused</code>;
+  Tab / Shift-Tab circulam entre widgets base focáveis. Uma sobreposição modal captura as
+  teclas antes de a camada base vê-las.
+</p>
+<CodeBlock code={rootFocus} />
+<h3>10.3 A pilha de sobreposições</h3>
+<p>
+  Sobreposições são empilhadas com <code>{'openOverlay(widget, { modal = bool })'}</code> e
+  removidas com <code>closeOverlay</code>. Uma modal captura toda a entrada; uma não-modal
+  (dropdown, tooltip) é descartada quando um clique cai fora dela.
+</p>
+<CodeBlock code={rootOverlay} />
+<h3>10.4 Ordem de roteamento de eventos</h3>
+<p>
+  A entrada flui de cima para baixo: sobreposições primeiro (topo da pilha primeiro), depois
+  widgets base, o primeiro que consome vence. O desenho vai ao contrário — base, depois
+  sobreposições de baixo para cima — para as sobreposições posteriores pintarem por cima. Esc
+  fecha a sobreposição do topo antes de qualquer outra coisa.
+</p>
+
+<h2>11. Containers e aninhamento</h2>
+<h3>11.1 Coordenadas relativas</h3>
+<p>
+  <code>Container</code> é maquinário compartilhado (não um widget isolado) para widgets que
+  contêm filhos. Ele translada por uma origem de conteúdo no <code>draw</code> e subtrai essa
+  origem das coordenadas de entrada, então os filhos vivem em espaço local e o aninhamento compõe.
+</p>
+<CodeBlock code={container} />
+<h3>11.2 Construindo Panel e Tabs sobre ele</h3>
+<p>
+  O Panel embute um Container e fornece um <code>originFn</code> que aponta para sua área de
+  conteúdo (dentro da barra de título e do espaçamento). O Tabs troca qual painel filho o
+  Container desenha conforme o cabeçalho selecionado. Como cada nível aplica seu próprio
+  deslocamento, um Button dentro de um Panel dentro de Tabs ainda recebe hover e cliques corretamente.
+</p>
+
+<h2>12. Sobreposições</h2>
+<p>Com Root e Container no lugar, sobreposições são apenas widgets empilhados:</p>
+<ul>
+  <li><strong>Modal</strong> — scrim + diálogo centralizado com botões; captura a entrada; entra suavemente por um valor <code>anim</code>.</li>
+  <li><strong>Dropdown</strong> — um controle fechado que abre um popup rolável como sobreposição não-modal.</li>
+  <li><strong>Tooltip</strong> — monitora o hover sobre um alvo e faz uma dica surgir perto do cursor.</li>
+  <li><strong>ContextMenu</strong> — abre um popup em um ponto via <code>{'root:openOverlay(popup, { modal = false })'}</code>.</li>
+  <li><strong>ToastHost</strong> — uma pilha, em um canto, de mensagens transitórias, cada uma sumindo por um temporizador.</li>
+</ul>
+
+<h2>13. Testando headless</h2>
+<p>A suíte faz mock do LÖVE para rodar sem janela e cair direto em CI.</p>
+<h3>13.1 O stub do LÖVE</h3>
+<p>Implemente apenas as chamadas que os widgets fazem; o desenho é no-op, as fontes são falsas com métricas fixas.</p>
+<CodeBlock code={stub} />
+<h3>13.2 O harness</h3>
+<p>Instale o stub, carregue a biblioteca uma vez e exponha um <code>check</code> compartilhado mais contadores de aprovado/reprovado.</p>
+<CodeBlock code={harness} />
+<h3>13.3 Escrevendo um caso</h3>
+<p>
+  Um caso constrói um widget, altera o estado, verifica que callbacks disparam e que a entrada
+  é consumida ou ignorada corretamente, e desenha uma vez como teste de fumaça (nunca dá erro).
+</p>
+<CodeBlock code={testcase} />
+<h3>13.4 Executando a suíte</h3>
+<p>Liste cada caso em <code>run.lua</code>; o executor sai com código diferente de zero em qualquer falha.</p>
+<CodeBlock code={runCases} />
+<CodeBlock code={'luajit tests/run.lua'} lang="bash" />
+
+<h2>14. Convenções e crescimento</h2>
+<p>O estilo da casa que mantém o sistema coerente conforme ele cresce:</p>
+<ul>
+  <li>Padrão de módulo local: <code>{'local M = {}'}</code> … <code>return M</code>. Indentação de 2 espaços, sem tabs.</li>
+  <li>Mantenha cada arquivo de widget abaixo de ~200 linhas; extraia lógica repetida para <code>util.lua</code> ou <code>container.lua</code>.</li>
+  <li>Nomes descritivos; sem locais de uma letra, exceto índices de laço e coordenadas.</li>
+  <li>Commits convencionais (<code>feat</code>, <code>fix</code>, <code>docs</code>, <code>test</code>, <code>refactor</code>, <code>chore</code>), assunto imperativo ≤ 50 caracteres.</li>
+</ul>
+<p><strong>Checklist para adicionar um widget:</strong></p>
+<ol>
+  <li>Crie <code>foxloves/widgets/name.lua</code> com um <code>new</code> documentado e os seis métodos.</li>
+  <li>Leia toda a aparência do tema; adicione qualquer token faltante a <code>theme.lua</code>.</li>
+  <li>Registre-o em <code>init.lua</code>.</li>
+  <li>Adicione <code>tests/cases/name.lua</code> e liste-o em <code>run.lua</code>; rode <code>luajit tests/run.lua</code>.</li>
+  <li>Mostre-o em <code>main.lua</code> e exercite com <code>love .</code>.</li>
+</ol>
+
+{:else}
 <h1>Building foxloves from scratch</h1>
 <p class="lead">
   A complete walkthrough of how the library is constructed, layer by layer, in
@@ -450,8 +707,6 @@ os.exit(h.fail == 0 and 0 or 1)`;
   dependencies: a shared theme, a set of widgets that all obey one lifecycle
   contract, a <code>Root</code> that drives them, and a headless test suite.
 </p>
-
-{#if $locale === 'pt'}<p class="en-only">{$t('build.enOnly')}</p>{/if}
 
 <!-- 1 -->
 <h2>1. Design principles</h2>
@@ -748,20 +1003,13 @@ os.exit(h.fail == 0 and 0 or 1)`;
   <li>Add <code>tests/cases/name.lua</code> and list it in <code>run.lua</code>; run <code>luajit tests/run.lua</code>.</li>
   <li>Show it in <code>main.lua</code> and exercise it with <code>love .</code>.</li>
 </ol>
+{/if}
 
 <style>
   .lead {
     font-size: 17px;
     color: var(--fox-text-muted);
     max-width: 700px;
-  }
-  .en-only {
-    padding: 8px 12px;
-    border: 1px solid var(--fox-border);
-    border-left: 3px solid var(--fox-accent);
-    border-radius: 4px;
-    background: var(--fox-fg);
-    font-size: 14px;
   }
   h2 {
     margin-top: 40px;
