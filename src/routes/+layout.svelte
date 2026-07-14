@@ -10,6 +10,7 @@
     <a class="brand" href="{base}/">foxloves</a>
     <a href="{base}/foundations/theme">Theme</a>
     <a href="{base}/foundations/lifecycle">Lifecycle</a>
+    <a href="{base}/foundations/building">Building foxloves</a>
     <a href="{base}/widgets">All widgets</a>
     <h4>Controls</h4>
     {#each cats.control as w}<a href="{base}/widgets/{w.id}">{w.displayName}</a>{/each}
