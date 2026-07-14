@@ -55,23 +55,67 @@ function headerDescriptions(header: string): Map<string, string> {
 function headerExample(header: string): { order: string[]; defaults: Map<string, string> } {
   const order: string[] = [];
   const defaults = new Map<string, string>();
-  const block = header.match(/\.new{([\s\S]*?)}/);
-  if (!block) return { order, defaults };
-  for (let line of block[1].split('\n')) {
-    line = line.replace(/--.*$/, '').trim(); // strip trailing comment
-    if (!line) continue;
-    for (const part of line.split(',')) {
-      const seg = part.trim();
-      if (!seg) continue;
-      const kv = seg.match(/^(\w+)\s*=\s*(.+)$/);
-      if (kv) {
-        if (!order.includes(kv[1])) order.push(kv[1]);
-        // Skip placeholder defaults like `<theme table>`.
-        if (!/^<.*>$/.test(kv[2].trim())) defaults.set(kv[1], kv[2].trim());
-      } else if (/^\w+$/.test(seg)) {
-        if (!order.includes(seg)) order.push(seg);
+
+  // Locate the `.new{` block and its matching close brace (brace-aware, so
+  // nested tables like `buttons = { { label = "OK" } }` are handled as a whole).
+  const m = header.search(/\.new\s*{/);
+  if (m < 0) return { order, defaults };
+  const open = header.indexOf('{', m);
+  let depth = 0;
+  let close = -1;
+  for (let j = open; j < header.length; j++) {
+    if (header[j] === '{') depth++;
+    else if (header[j] === '}') {
+      depth--;
+      if (depth === 0) {
+        close = j;
+        break;
       }
     }
+  }
+  if (close < 0) return { order, defaults };
+
+  // Strip line comments, then split the block into top-level segments on commas
+  // that sit at brace depth 0 (nested table contents are kept inside the value).
+  const inner = header
+    .slice(open + 1, close)
+    .split('\n')
+    .map((l) => l.replace(/--.*$/, ''))
+    .join('\n');
+  const segs: string[] = [];
+  let d = 0;
+  let cur = '';
+  for (const ch of inner) {
+    if (ch === '{') d++;
+    else if (ch === '}') d--;
+    if (ch === ',' && d === 0) {
+      segs.push(cur);
+      cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  if (cur.trim()) segs.push(cur);
+
+  for (const raw of segs) {
+    const seg = raw.trim();
+    if (!seg) continue;
+    const eq = seg.indexOf('=');
+    if (eq > 0 && /^\w+$/.test(seg.slice(0, eq).trim())) {
+      const name = seg.slice(0, eq).trim();
+      const val = seg.slice(eq + 1).trim();
+      if (!order.includes(name)) order.push(name);
+      if (/^<.*>$/.test(val)) {
+        // placeholder like <theme table>; no usable default
+      } else if (val.startsWith('{')) {
+        defaults.set(name, '{…}'); // collapse nested-table literals
+      } else {
+        defaults.set(name, val);
+      }
+    } else if (/^\w+$/.test(seg)) {
+      if (!order.includes(seg)) order.push(seg); // bare `name,` entry
+    }
+    // anything else (stray tokens) is ignored
   }
   return { order, defaults };
 }
@@ -107,7 +151,16 @@ const COMMON: Record<string, { description: string; type?: WidgetOption['type'] 
   onChange: { description: 'Called when the value changes.', type: 'function' },
   onClick: { description: 'Called when activated.', type: 'function' },
   onSubmit: { description: 'Called on Enter.', type: 'function' },
-  onRemove: { description: 'Called when removed.', type: 'function' }
+  onRemove: { description: 'Called when removed.', type: 'function' },
+  message: { description: 'Body message text.', type: 'string' },
+  animated: { description: 'Animate the entrance; false snaps instantly.', type: 'boolean' },
+  buttons: { description: 'Button specs: { label, onClick }.', type: 'table' },
+  tabs: { description: 'Tab specs: { label, panel }.', type: 'table' },
+  target: { description: 'Trigger area: { x, y, w, h }.', type: 'table' },
+  length: { description: 'Line length, in pixels.', type: 'number' },
+  thickness: { description: 'Line thickness, in pixels.', type: 'number' },
+  headerH: { description: 'Header row height, in pixels.', type: 'number' },
+  rowH: { description: 'Row height, in pixels.', type: 'number' }
 };
 
 function inferType(def: string | null, name: string): WidgetOption['type'] {

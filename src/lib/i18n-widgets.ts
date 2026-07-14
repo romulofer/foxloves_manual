@@ -34,7 +34,16 @@ const commonPt: Record<string, string> = {
   onChange: 'Chamado quando o valor muda.',
   onClick: 'Chamado ao ativar.',
   onSubmit: 'Chamado ao pressionar Enter.',
-  onRemove: 'Chamado ao remover.'
+  onRemove: 'Chamado ao remover.',
+  message: 'Texto do corpo da mensagem.',
+  animated: 'Anima a entrada; false aparece instantaneamente.',
+  buttons: 'Especificações dos botões: { label, onClick }.',
+  tabs: 'Especificações das abas: { label, panel }.',
+  target: 'Área de disparo: { x, y, w, h }.',
+  length: 'Comprimento da linha, em pixels.',
+  thickness: 'Espessura da linha, em pixels.',
+  headerH: 'Altura da linha de cabeçalho, em pixels.',
+  rowH: 'Altura da linha, em pixels.'
 };
 
 // Widget-specific option descriptions (from Lua header comments), keyed by the
