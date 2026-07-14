@@ -107,7 +107,7 @@ M.specs = {
     shots = {
       { state = "mid" },
       { state = "hover", mutate = hover },
-      { state = "vertical", opts = { w = 24, h = 140, vertical = true } },
+      { state = "vertical", opts = { w = 24, h = 140, vertical = true }, size = { w = 24, h = 140 } },
     },
   },
   stepper = {

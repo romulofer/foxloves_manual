@@ -54,8 +54,9 @@ local function renderShot(id, name, spec, shot)
   if spec.fullscreen then
     cw, ch = love.graphics.getDimensions()
   else
-    cw = spec.size.w + PAD * 2
-    ch = spec.size.h + PAD * 2
+    local sz = shot.size or spec.size   -- per-shot override for odd-sized variants
+    cw = sz.w + PAD * 2
+    ch = sz.h + PAD * 2
   end
   local canvas = love.graphics.newCanvas(cw, ch)
   -- Some widgets expose their visual via a sub-object (e.g. a ContextMenu's
