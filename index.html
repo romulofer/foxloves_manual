@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="./_app/immutable/entry/start.BifMrrob.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CmOegOqL.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CwImYb1J.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/-UyI9lYi.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/vNBdmfBM.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D445fCRO.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/app.HnMv1bk6.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/C1FmrZbK.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/C0e3dW7X.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/0.CRUs_8Fl.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D6YF6ztN.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/DO5RGlt0.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Csh4crAz.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/2.BSdCy4uW.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D0OL2RRu.js" rel="modulepreload">
+		<title>foxloves — manual</title><!-- HEAD_svelte-1qu5dzn_START --><!-- HEAD_svelte-1qu5dzn_END -->
+		<link href="./_app/immutable/assets/0.DBRaqW4U.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/CodeBlock.C3QN3iiN.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/2.-rbSukiS.css" rel="stylesheet">
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">  <div class="shell svelte-2xrv4l"><nav class="svelte-2xrv4l"><a class="brand svelte-2xrv4l" href="./" data-svelte-h="svelte-4ftl56">foxloves</a> <div class="lang svelte-1v02o16" role="group" aria-label="Language"><button aria-pressed="true" class="svelte-1v02o16 active">EN </button><button aria-pressed="false" class="svelte-1v02o16">PT-BR </button> </div> <a href="./foundations/theme" class="svelte-2xrv4l">Theme</a> <a href="./foundations/lifecycle" class="svelte-2xrv4l">Lifecycle</a> <a href="./foundations/building" class="svelte-2xrv4l">Building foxloves</a> <a href="./widgets" class="svelte-2xrv4l">All widgets</a> <h4 class="svelte-2xrv4l">Controls</h4> <a href="./widgets/button" class="svelte-2xrv4l">Button</a><a href="./widgets/textbox" class="svelte-2xrv4l">Textbox</a><a href="./widgets/label" class="svelte-2xrv4l">Label</a><a href="./widgets/badge" class="svelte-2xrv4l">Badge</a><a href="./widgets/avatar" class="svelte-2xrv4l">Avatar</a><a href="./widgets/divider" class="svelte-2xrv4l">Divider</a><a href="./widgets/progressbar" class="svelte-2xrv4l">ProgressBar</a><a href="./widgets/checkbox" class="svelte-2xrv4l">Checkbox</a><a href="./widgets/toggle" class="svelte-2xrv4l">Toggle</a><a href="./widgets/radiogroup" class="svelte-2xrv4l">RadioGroup</a><a href="./widgets/slider" class="svelte-2xrv4l">Slider</a><a href="./widgets/stepper" class="svelte-2xrv4l">Stepper</a><a href="./widgets/iconbutton" class="svelte-2xrv4l">IconButton</a><a href="./widgets/spinner" class="svelte-2xrv4l">Spinner</a><a href="./widgets/numberfield" class="svelte-2xrv4l">NumberField</a><a href="./widgets/segmentedcontrol" class="svelte-2xrv4l">SegmentedControl</a> <h4 class="svelte-2xrv4l">Containers / Overlays</h4> <a href="./widgets/panel" class="svelte-2xrv4l">Panel</a><a href="./widgets/modal" class="svelte-2xrv4l">Modal</a><a href="./widgets/dropdown" class="svelte-2xrv4l">Dropdown</a><a href="./widgets/tooltip" class="svelte-2xrv4l">Tooltip</a><a href="./widgets/tabs" class="svelte-2xrv4l">Tabs</a><a href="./widgets/listbox" class="svelte-2xrv4l">ListBox</a><a href="./widgets/contextmenu" class="svelte-2xrv4l">ContextMenu</a><a href="./widgets/toast" class="svelte-2xrv4l">ToastHost</a></nav> <main class="svelte-2xrv4l"> <h1 data-svelte-h="svelte-ba0hk6">foxloves</h1> <p class="lead svelte-1o8m1u0">A dependency-free, themeable UI widget library for LÖVE (love2d). 24 widgets sharing one input and drawing lifecycle.</p> <p class="about svelte-1o8m1u0">Controls, containers, and overlays that share one theme and one input/draw lifecycle — no dependencies, pure Lua on LÖVE 11.x. This site is the manual; the design system itself lives in its own repository.</p> <p class="repo svelte-1o8m1u0"><a href="https://github.com/legendaryredfox/foxloves" target="_blank" rel="noopener noreferrer">View the foxloves source on GitHub →</a></p> <h2 class="svelte-1o8m1u0">Install</h2> <p>Copy the foxloves/ folder onto your require path, then:</p> <pre class="fallback svelte-8sn62v"><code>local fox = require("foxloves")</code></pre> <h2 class="svelte-1o8m1u0">Quick start</h2> <pre class="fallback svelte-8sn62v"><code>local fox = require("foxloves")
+local ui = fox.Root.new()
+ui:add(fox.Button.new{ x = 40, y = 40, w = 120, h = 34, label = "Greet" })
+
+function love.update(dt) ui:update(dt) end
+function love.draw()    ui:draw() end</code></pre> <p class="cta svelte-1o8m1u0"><a href="./widgets">Browse all 24 widgets →</a></p></main> </div> 
+			
+			<script>
+				{
+					__sveltekit_7d49rn = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						assets: "/foxloves_manual"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("./_app/immutable/entry/start.BifMrrob.js"),
+						import("./_app/immutable/entry/app.HnMv1bk6.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 2],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
+</html>

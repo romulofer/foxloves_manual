@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../_app/immutable/entry/start.BifMrrob.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CmOegOqL.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CwImYb1J.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/-UyI9lYi.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/vNBdmfBM.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/D445fCRO.js" rel="modulepreload">
+		<link href="../_app/immutable/entry/app.HnMv1bk6.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/C1FmrZbK.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/C0e3dW7X.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/0.CRUs_8Fl.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/D6YF6ztN.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DO5RGlt0.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/Csh4crAz.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/7.COn_SB1A.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/BuWlL-Vn.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/D0OL2RRu.js" rel="modulepreload">
+		<title>ToastHost — foxloves</title><!-- HEAD_svelte-14ev519_START --><!-- HEAD_svelte-14ev519_END -->
+		<link href="../_app/immutable/assets/0.DBRaqW4U.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/i18n-widgets.CzjsCIQX.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CodeBlock.C3QN3iiN.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/7.C1-tXGwB.css" rel="stylesheet">
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">  <div class="shell svelte-2xrv4l"><nav class="svelte-2xrv4l"><a class="brand svelte-2xrv4l" href="../" data-svelte-h="svelte-4ftl56">foxloves</a> <div class="lang svelte-1v02o16" role="group" aria-label="Language"><button aria-pressed="true" class="svelte-1v02o16 active">EN </button><button aria-pressed="false" class="svelte-1v02o16">PT-BR </button> </div> <a href="../foundations/theme" class="svelte-2xrv4l">Theme</a> <a href="../foundations/lifecycle" class="svelte-2xrv4l">Lifecycle</a> <a href="../foundations/building" class="svelte-2xrv4l">Building foxloves</a> <a href="../widgets" class="svelte-2xrv4l">All widgets</a> <h4 class="svelte-2xrv4l">Controls</h4> <a href="../widgets/button" class="svelte-2xrv4l">Button</a><a href="../widgets/textbox" class="svelte-2xrv4l">Textbox</a><a href="../widgets/label" class="svelte-2xrv4l">Label</a><a href="../widgets/badge" class="svelte-2xrv4l">Badge</a><a href="../widgets/avatar" class="svelte-2xrv4l">Avatar</a><a href="../widgets/divider" class="svelte-2xrv4l">Divider</a><a href="../widgets/progressbar" class="svelte-2xrv4l">ProgressBar</a><a href="../widgets/checkbox" class="svelte-2xrv4l">Checkbox</a><a href="../widgets/toggle" class="svelte-2xrv4l">Toggle</a><a href="../widgets/radiogroup" class="svelte-2xrv4l">RadioGroup</a><a href="../widgets/slider" class="svelte-2xrv4l">Slider</a><a href="../widgets/stepper" class="svelte-2xrv4l">Stepper</a><a href="../widgets/iconbutton" class="svelte-2xrv4l">IconButton</a><a href="../widgets/spinner" class="svelte-2xrv4l">Spinner</a><a href="../widgets/numberfield" class="svelte-2xrv4l">NumberField</a><a href="../widgets/segmentedcontrol" class="svelte-2xrv4l">SegmentedControl</a> <h4 class="svelte-2xrv4l">Containers / Overlays</h4> <a href="../widgets/panel" class="svelte-2xrv4l">Panel</a><a href="../widgets/modal" class="svelte-2xrv4l">Modal</a><a href="../widgets/dropdown" class="svelte-2xrv4l">Dropdown</a><a href="../widgets/tooltip" class="svelte-2xrv4l">Tooltip</a><a href="../widgets/tabs" class="svelte-2xrv4l">Tabs</a><a href="../widgets/listbox" class="svelte-2xrv4l">ListBox</a><a href="../widgets/contextmenu" class="svelte-2xrv4l">ContextMenu</a><a href="../widgets/toast" class="svelte-2xrv4l">ToastHost</a></nav> <main class="svelte-2xrv4l"> <header class="svelte-izn2ph"><h1>ToastHost</h1> <span class="badge svelte-w65wdq">Container / Overlay</span></header> <p class="summary svelte-izn2ph">ToastHost widget: transient, stacked notification messages. Add it to a fox.Root (root:add). Push messages with: host:show("Saved.", { kind = "success", duration = 2 }) kind is info | success | warning | error and colors the left stripe; it reads theme.color[kind] and falls back to accent. show() returns a handle you can pass to host:dismiss(handle) to fade a toast out early. The host never captures input, so add it after the widgets it floats over.</p> <h2 class="svelte-izn2ph">Appearance</h2> <div class="gallery svelte-yuzyiz"><figure class="svelte-hxkwi8"><img src="../shots/toast/info.png" alt="info" width="420" height="260" class="svelte-hxkwi8"> <figcaption class="svelte-hxkwi8">info</figcaption> </figure><figure class="svelte-hxkwi8"><img src="../shots/toast/success.png" alt="success" width="420" height="260" class="svelte-hxkwi8"> <figcaption class="svelte-hxkwi8">success</figcaption> </figure> </div> <h2 class="svelte-izn2ph">Capabilities</h2> <div class="chips svelte-6wf627">    <span class="none svelte-6wf627">Display only</span> </div> <h2 class="svelte-izn2ph">Options</h2> <table class="svelte-19ks9hk"><thead><tr><th class="svelte-19ks9hk">Option</th><th class="svelte-19ks9hk">Type</th><th class="svelte-19ks9hk">Default</th><th class="svelte-19ks9hk">Description</th></tr></thead> <tbody><tr><td class="svelte-19ks9hk"><code>corner</code></td> <td class="svelte-19ks9hk">string</td> <td class="svelte-19ks9hk"><code>"br"</code></td> <td class="svelte-19ks9hk">tl | tr | bl | br  (which corner toasts stack in)</td> </tr><tr><td class="svelte-19ks9hk"><code>gap</code></td> <td class="svelte-19ks9hk">number</td> <td class="svelte-19ks9hk"><code>8</code></td> <td class="svelte-19ks9hk">pixels between stacked toasts</td> </tr><tr><td class="svelte-19ks9hk"><code>margin</code></td> <td class="svelte-19ks9hk">number</td> <td class="svelte-19ks9hk"><code>12</code></td> <td class="svelte-19ks9hk">pixels from the screen edges</td> </tr><tr><td class="svelte-19ks9hk"><code>width</code></td> <td class="svelte-19ks9hk">number</td> <td class="svelte-19ks9hk"><code>260</code></td> <td class="svelte-19ks9hk">toast box width</td> </tr><tr><td class="svelte-19ks9hk"><code>duration</code></td> <td class="svelte-19ks9hk">number</td> <td class="svelte-19ks9hk"><code>3</code></td> <td class="svelte-19ks9hk">default seconds a toast stays before fading out</td> </tr><tr><td class="svelte-19ks9hk"><code>max</code></td> <td class="svelte-19ks9hk">number</td> <td class="svelte-19ks9hk"><code>4</code></td> <td class="svelte-19ks9hk">most toasts kept at once (oldest dropped past this)</td> </tr><tr><td class="svelte-19ks9hk"><code>theme</code></td> <td class="svelte-19ks9hk">table</td> <td class="svelte-19ks9hk"><code>&lt;default theme></code></td> <td class="svelte-19ks9hk">Theme table override; falls back to the default.</td> </tr></tbody> </table> <h2 class="svelte-izn2ph">Example</h2> <pre class="fallback svelte-8sn62v"><code>local fox = require("foxloves")
+local toast = fox.ToastHost.new{
+  x = 40, y = 40,
+}</code></pre> <h2 class="svelte-izn2ph">Source</h2> <pre class="fallback svelte-8sn62v"><code>function ToastHost.new(opts)
+  opts = opts or {}
+  local self = setmetatable({}, ToastHost)
+  self.corner = opts.corner or "br"
+  self.gap = opts.gap or 8
+  self.margin = opts.margin or 12
+  self.width = opts.width or 260
+  self.duration = opts.duration or 3
+  self.max = opts.max or 4
+  self.theme = opts.theme or defaultTheme
+  self.toasts = {}  -- newest last
+  return self
+end</code></pre></main> </div> 
+			
+			<script>
+				{
+					__sveltekit_7d49rn = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						assets: "/foxloves_manual"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.BifMrrob.js"),
+						import("../_app/immutable/entry/app.HnMv1bk6.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 7],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
+</html>
