@@ -10,6 +10,7 @@
     "generate": "bun run scripts/generate.ts",
     "parse": "bun run scripts/parse-widgets.ts",
     "shots": "bun run scripts/shoot.ts",
+    "deploy": "bash scripts/deploy-pages.sh",
     "test": "bun test"
   },
   "devDependencies": {

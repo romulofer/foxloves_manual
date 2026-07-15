@@ -45,6 +45,9 @@ const strings: Record<Locale, Dict> = {
 
     'home.lead':
       'A dependency-free, themeable UI widget library for LÖVE (love2d). {n} widgets sharing one input and drawing lifecycle.',
+    'home.about':
+      'Controls, containers, and overlays that share one theme and one input/draw lifecycle — no dependencies, pure Lua on LÖVE 11.x. This site is the manual; the design system itself lives in its own repository.',
+    'home.repo': 'View the foxloves source on GitHub →',
     'home.install': 'Install',
     'home.installText': 'Copy the foxloves/ folder onto your require path, then:',
     'home.quickstart': 'Quick start',
@@ -105,6 +108,9 @@ const strings: Record<Locale, Dict> = {
 
     'home.lead':
       'Uma biblioteca de widgets de interface para LÖVE (love2d), sem dependências e com temas. {n} widgets compartilhando um único ciclo de entrada e desenho.',
+    'home.about':
+      'Controles, contêineres e sobreposições que compartilham um tema e um único ciclo de entrada/desenho — sem dependências, Lua puro no LÖVE 11.x. Este site é o manual; o design system em si vive no próprio repositório.',
+    'home.repo': 'Ver o código-fonte do foxloves no GitHub →',
     'home.install': 'Instalação',
     'home.installText': 'Copie a pasta foxloves/ para o seu caminho de require e:',
     'home.quickstart': 'Início rápido',

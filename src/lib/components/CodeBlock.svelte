@@ -1,12 +1,18 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { codeToHtml } from 'shiki';
   export let code: string;
   export let lang = 'lua';
   let html = '';
-  onMount(async () => {
-    html = await codeToHtml(code, { lang, theme: 'vitesse-dark' });
-  });
+  // Recompute whenever code/lang change (the component instance is reused across
+  // client-side navigation between widgets). Guard against out-of-order async
+  // results so a slow highlight can't overwrite a newer one.
+  let reqId = 0;
+  $: {
+    const id = ++reqId;
+    codeToHtml(code, { lang, theme: 'vitesse-dark' }).then((h) => {
+      if (id === reqId) html = h;
+    });
+  }
 </script>
 
 {#if html}

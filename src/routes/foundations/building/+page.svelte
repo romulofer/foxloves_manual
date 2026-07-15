@@ -1,6 +1,7 @@
 <script lang="ts">
   import CodeBlock from '$lib/components/CodeBlock.svelte';
   import { locale } from '$lib/i18n';
+  import { base } from '$app/paths';
 
   const layout = `foxloves/
 ├── conf.lua              -- LÖVE window config (love.conf)
@@ -495,7 +496,7 @@ os.exit(h.fail == 0 and 0 or 1)`;
 <p>
   <code>info</code>, <code>success</code>, <code>warning</code> e <code>error</code> dão aos
   widgets de status (Toast, Badge) um vocabulário compartilhado em vez de tons ad-hoc. Veja a
-  <a href="/foundations/theme">referência de tema</a> para as amostras ao vivo.
+  <a href="{base}/foundations/theme">referência de tema</a> para as amostras ao vivo.
 </p>
 
 <h2>4. Helpers compartilhados</h2>
@@ -759,7 +760,7 @@ os.exit(h.fail == 0 and 0 or 1)`;
 <p>
   <code>info</code>, <code>success</code>, <code>warning</code>, and <code>error</code>
   give status widgets (Toast, Badge) a shared vocabulary rather than ad-hoc hues. See the
-  <a href="/foundations/theme">Theme reference</a> for the live swatches.
+  <a href="{base}/foundations/theme">Theme reference</a> for the live swatches.
 </p>
 
 <!-- 4 -->

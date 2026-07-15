@@ -15,6 +15,12 @@ function love.draw()    ui:draw() end`;
 
 <h1>foxloves</h1>
 <p class="lead">{$t('home.lead', { n: widgets.length })}</p>
+<p class="about">{$t('home.about')}</p>
+<p class="repo">
+  <a href="https://github.com/legendaryredfox/foxloves" target="_blank" rel="noopener noreferrer">
+    {$t('home.repo')}
+  </a>
+</p>
 
 <h2>{$t('home.install')}</h2>
 <p>{$t('home.installText')}</p>
@@ -30,6 +36,14 @@ function love.draw()    ui:draw() end`;
     font-size: 18px;
     color: var(--fox-text-muted);
     max-width: 640px;
+  }
+  .about {
+    max-width: 640px;
+    color: var(--fox-text-muted);
+  }
+  .repo {
+    margin-top: 4px;
+    font-size: 16px;
   }
   h2 {
     margin-top: 28px;
